@@ -1,0 +1,55 @@
+body {
+    height: 100vh;
+    max-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 24px;
+    background-color: lightgray;
+}
+
+section {
+    margin-bottom: 16px;
+}
+
+.dateContainer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.dateContainer label {
+    margin-right: 8px;
+}
+
+.results {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.helperValuesContainer {
+    padding: 8px 0;
+    width: 50%;
+}
+
+.helperValues {
+    width: 100px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.matrixContainer {
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+}
+
+.matrixContainer .matrixValues {
+    width: calc(100%/8 - 2px);
+    padding: 4px 0;
+    border: 1px solid gray;
+}
+
