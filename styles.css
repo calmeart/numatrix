@@ -4,7 +4,7 @@ body {
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 24px;
-    background-color: lightgray;
+    background-color: #FDDFF8;
 }
 
 section {
@@ -22,34 +22,88 @@ section {
 }
 
 .results {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 100%;
 }
 
-.helperValuesContainer {
-    padding: 8px 0;
-    width: 50%;
-}
-
-.helperValues {
-    width: 100px;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-}
-
-.matrixContainer {
+.flexContainer {
     display: flex;
     flex-wrap: wrap;
+    width: 60%;
+    padding: 8;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid #000;
+}
+
+.flexContainer div {
+    position: relative;
+    border: 1px solid black;
+    width: 25%;
+    box-sizing: border-box;
+}
+
+.flexContainer div.date {
     width: 50%;
 }
 
-.matrixContainer .matrixValues {
-    width: calc(100%/8 - 2px);
-    padding: 4px 0;
-    border: 1px solid gray;
+.flexContainer div span {
+    position: absolute;
+    font-size: 12px;
+    line-height: 1;
+    top: 5px;
+    left: 5px;
+    color: #990033;
+    font-weight: 500;
+}
+
+.flexContainer div.character,
+.flexContainer div.health,
+.flexContainer div.luck {
+    border-top: 2px solid red;
+}
+
+.flexContainer div.luck,
+.flexContainer div.responsibility,
+.flexContainer div.memory {
+    border-right: 2px solid red;
+}
+
+.flexContainer div.memory,
+.flexContainer div.effort,
+.flexContainer div.interest {
+    border-bottom: 2px solid red;
+}
+
+.flexContainer div.character,
+.flexContainer div.energy,
+.flexContainer div.interest {
+    border-left: 2px solid red;
+}
+
+.flexContainer div p {
+    width: 100%;
+    font-size: 16px;
+    text-align: center;
+    line-height: 3;
+    margin: 0;
+    color: red;
+}
+
+.explanationContainer {
+    width: 80%;
+    padding: 8px;
+}
+
+.explanationContainer div {
+    margin-bottom: 10px;
+}
+
+.explanationContainer .title {
+    font-weight: 700;
 }
 

@@ -1,44 +1,53 @@
 $(document).ready(function() {
     const $dateInput = $('#dateInput');
-    const $helperValueContainer = $('.helperValuesContainer');
-    const $matrixContainer = $('.matrixContainer');
-
-    let dateSelected;
-    let matrix = [];
+    const $resultContainer = $('section.results');
 
     $dateInput.change(function(event) {
-        dateSelected = event.target.value;
+        $resultContainer.css("display", "none");
+        $('.appended').remove();
 
-        helper = getHelperValues(dateSelected);
-        for (let key of Object.keys(helper)) {
-            insertTable(key, helper[key])
-        }
+        let dateSelected = event.target.value;
+        let helper = getHelperValues(dateSelected);
+        let matrix = formMatrix(helper);
+        let object = formCharacterNumbers(matrix, helper);
 
-        // add first to the matrix
-        let secondHelper = splitAndSum(helper.first);
-        insertTable('second', secondHelper)
+        $(`.flexContainer div.date`).append(`<p class="appended">${convertDate(dateSelected)}</p>`);
+        for (let key in object) {
+            let string = object[key] == 0 || object[key] == '' || object[key] == '-' ? "---" : object[key]
+            $(`.flexContainer div.${key}`).append(`<p class="appended">${string}</p>`);
 
-        // calculate third helper
-        let thirdHelper = helper.first - (matrix[0][0] * 2);
-        // insert second to matrix
-        let destiny = splitAndSum(secondHelper);
-        insertTable('third', thirdHelper);
-
-        //insert fourth
-        let fourthHelper = splitAndSum(thirdHelper);
-        insertTable('fourth', fourthHelper);
-        splitAndSum(fourthHelper);
-
-        //destiny number
-        insertTable('destiny', destiny);
-
-        for (let row of matrix) {
-            let num = 8 - row.length;
-            row.push(...Array(num).fill(' '));
-            for (let col of row) {
-                insertMatrix(col);
+            // select the explanation from json
+            let exp = '';
+            if (key === 'character') {
+                if (string === '---') {
+                    if (object.responsibility.includes('8')) {
+                        exp = data[key]["w8"].ru
+                    } else {
+                        exp = data[key]["wout8"].ru
+                    }
+                } else {
+                    if (!!data[key][string]) {
+                        exp = data[key][string].ru
+                    } else {
+                        exp = data[key]["max"].ru
+                    }
+                }
+            } else {
+                if (string === '---') {
+                    exp = data[key]["-"].ru
+                } else {
+                    if (!!data[key][string]) {
+                        exp = data[key][string].ru
+                    } else {
+                        exp = data[key]["max"].ru
+                    }
+                }
             }
+            
+            $(`.explanationContainer div.${key}`).append(`<span class="appended">${exp}</span>`);
         }
+
+        $resultContainer.css("display", "flex");
     });
 
 
@@ -50,35 +59,72 @@ $(document).ready(function() {
         let day = new Date(date).getDate();
         let month = new Date(date).getMonth() + 1;
         let year = new Date(date).getFullYear();
+        let first = splitAndSum(day) + splitAndSum(month) + splitAndSum(year);
+        let second = splitAndSum(first);
+        let third = parseInt(first) - (2 * (parseInt(day.toString()[0])));
+        let fourth = splitAndSum(third);
+        let destiny = splitAndSum(second);
     
-        // add date values to matrix
         return {
             day, 
             month, 
             year,
-            first: splitAndSum(day) + splitAndSum(month) + splitAndSum(year)
+            first,
+            second,
+            third,
+            fourth,
+            destiny
         };
     };
     
-    // split the numbers and add them to matrix
+    // split the numbers
     function splitAndSum(value) {
         let array = value.toString().split('');
-        matrix.push(array);
         return array.reduce((a, b) => parseInt(a) + parseInt(b), 0);
     }
-    
-    function insertTable (key, value) {
-        let element = `<div class="helperValues">
-        <p>${key.toUpperCase()}: </p>
-        <p>${value}</p>
-        </div>`;
-        $helperValueContainer.append(element);
-    };
-    
-    function insertMatrix(value) {
-        $matrixContainer.append(`
-        <div class="matrixValues">${value}</div>
-        `)
-    }
-});
 
+    function convertDate(date) {
+        date = new Date(date);
+        return `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.${date.getFullYear()}`
+    }
+
+    function formMatrix(helper) {
+        let string = '';
+        for (let key in helper) {
+            if (key !== 'destiny') string = string.concat(helper[key]);
+        }
+
+        let array = string.split('');
+        let matrix = {};
+
+        for (let i = 1; i < 10; i++) {
+            matrix[i] = array.filter(item => item == i).length;
+        }
+
+        return matrix;
+    }
+
+    function formCharacterNumbers(matrix, helper) {
+        return {
+            character: matrix[1] > 0 ? "1".repeat(matrix[1]) : "-",
+            energy: matrix[2] > 0 ?"2".repeat(matrix[2]) : "-",
+            interest: matrix[3] > 0 ?"3".repeat(matrix[3]) : "-",
+            health: matrix[4] > 0 ?"4".repeat(matrix[4]) : "-",
+            logic: matrix[5] > 0 ?"5".repeat(matrix[5]) : "-",
+            effort: matrix[6] > 0 ?"6".repeat(matrix[6]) : "-",
+            luck: matrix[7] > 0 ?"7".repeat(matrix[7]) : "-",
+            responsibility: matrix[8] > 0 ?"8".repeat(matrix[8]) : "-",
+            memory: matrix[9] > 0 ?"9".repeat(matrix[9]) : "-",
+            destiny: helper.destiny,
+            goal: matrix[1] + matrix[4] + matrix[7],
+            family: matrix[2] + matrix[5] + matrix[8],
+            habits: matrix[3] + matrix[6] + matrix[9],
+            confidence: matrix[1] + matrix[2] + matrix[3],
+            materiality: matrix[4] + matrix[5] + matrix[6],
+            talent: matrix[7] + matrix[8] + matrix[9],
+            spirituality: matrix[1] + matrix[5] + matrix[9],
+            temperament: matrix[3] + matrix[5] + matrix[7],
+        }
+    }
+    
+});
